@@ -1,5 +1,7 @@
 const User = require('../models/user')
 const logger = require('../utils/logger')
+const dotenv = require("dotenv");
+dotenv.config();
 
 exports.init = async function () {
     if (await User.countDocuments({"username": "test@koibanx.com"})) {
@@ -7,8 +9,8 @@ exports.init = async function () {
     }
 
     let user = new User();
-    user.username = "test@koibanx.com";
-    user.password = "admin";
+    user.username = process.env.TEST_USERNAME;
+    user.password = process.env.TEST_PASSWORD;
     await User.create(user);
 
     logger.info("Test User created")
