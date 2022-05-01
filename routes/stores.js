@@ -14,7 +14,30 @@ router.route('/stores')
       "active": 1,
       "lastSale": 1
     }
-    const stores = await Store.find().select(field_inclusion)
+    let doc_query;
+    try {
+      doc_query = req.query.q ? JSON.parse(req.query.q) : {}
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        res.statusMessage = "bad json syntax on query"
+        res.status(400).end()
+        return
+      } else {
+        res.statusMessage = "unknown error"
+        res.status(400).end()
+        return
+      }
+    }
+
+    let stores;
+    try {
+      stores = await Store.find(doc_query).select(field_inclusion)
+    } catch (e) {
+        res.statusMessage = "Bad mongodb query on document"
+        res.status(400).end()
+        return
+    }
+
     const total = stores.length
     const page = req.query.page ?? 1
     const limit = req.query.limit ?? 10
